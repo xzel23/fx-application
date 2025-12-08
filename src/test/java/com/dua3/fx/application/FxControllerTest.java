@@ -81,7 +81,7 @@ class FxControllerTest extends FxTestBase {
     /**
      * Test the dirtyDocuments method.
      * <p>
-     * FIXME: This test is limited because we can't easily add documents to the controller's list.
+     * NOTE: This test is limited because we can't easily add documents to the controller's list.
      * In a real application, we would need a more comprehensive test that adds documents to the list
      * and checks that dirty documents are correctly identified.
      */
