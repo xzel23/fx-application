@@ -209,6 +209,12 @@ allprojects {
             withSourcesJar()
         }
 
+        if (project == rootProject) {
+            tasks.named<Jar>("javadocJar") {
+                dependsOn("aggregateJavadoc")
+            }
+        }
+
         cabe {
             if (isReleaseVersion) {
                 config.set(Configuration.parse("publicApi=THROW_NPE:privateApi=ASSERT"))
