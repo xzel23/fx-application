@@ -140,7 +140,7 @@ class FxControllerTest extends FxTestBase {
      */
     static class TestApplication extends FxApplication<TestApplication, TestController> {
         TestApplication() {
-            super(I18N.getInstance(), null);
+            super("Testapplication", I18N.getInstance(), null);
         }
 
         @Override

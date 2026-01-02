@@ -47,15 +47,16 @@ public abstract class FxApplicationFxml<A extends FxApplicationFxml<A, C>, C ext
      * <p>
      * Note: i18n must contain the following mappings:
      * <ul>
-     *     <li>"fx.application.fxml.url": the {@link URL} pointing to the FXML</li>
-     *     <li>"fx.application.fxml.bundle": the {@link ResourceBundle} to use</li>
+     *     <li>"dua3.fx.application.fxml.url": the {@link URL} pointing to the FXML</li>
+     *     <li>"dua3.fx.application.fxml.bundle": the {@link ResourceBundle} to use</li>
      * </ul>
      *
+     * @param applicationName the name of the application
      * @param i18n the I18N instance for retrieving resources
      * @param license the license, if software is licensed
      */
-    protected FxApplicationFxml(I18N i18n, @Nullable LicenseData license) {
-        super(i18n, license);
+    protected FxApplicationFxml(String applicationName, I18N i18n, @Nullable LicenseData license) {
+        super(applicationName, i18n, license);
     }
 
     /**
@@ -64,8 +65,8 @@ public abstract class FxApplicationFxml<A extends FxApplicationFxml<A, C>, C ext
     @Override
     protected Parent createParentAndInitController() throws Exception {
         // create a loader and load FXML
-        URL fxml = (URL) i18n.getObject("fx.application.fxml.url");
-        ResourceBundle fxmlBundle = (ResourceBundle) i18n.getObject("fx.application.fxml.bundle");
+        URL fxml = (URL) i18n.getObject("dua3.fx.application.fxml.url");
+        ResourceBundle fxmlBundle = (ResourceBundle) i18n.getObject("dua3.fx.application.fxml.bundle");
         FXMLLoader loader = new FXMLLoader(fxml, fxmlBundle);
 
         Parent root = loader.load();

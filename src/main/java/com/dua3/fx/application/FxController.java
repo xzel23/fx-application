@@ -130,17 +130,17 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
 
                 String header;
                 if (!doc.hasLocation()) {
-                    header = i18n.get("fx.application.message.unsaved.changes.untitled");
+                    header = i18n.get("dua3.fx.application.message.unsaved.changes.untitled");
                 } else {
-                    header = i18n.format("fx.application.message.unsaved.changes.{0.document}", dirtyList.getFirst().getName());
+                    header = i18n.format("dua3.fx.application.message.unsaved.changes.{0.document}", dirtyList.getFirst().getName());
                 }
 
-                ButtonType bttSave = new ButtonType(i18n.get("fx.application.button.save"), ButtonBar.ButtonData.YES);
-                ButtonType bttDontSave = new ButtonType(i18n.get("fx.application.button.no.save"), ButtonBar.ButtonData.NO);
+                ButtonType bttSave = new ButtonType(i18n.get("dua3.fx.application.button.save"), ButtonBar.ButtonData.YES);
+                ButtonType bttDontSave = new ButtonType(i18n.get("dua3.fx.application.button.no.save"), ButtonBar.ButtonData.NO);
 
                 Dialogs.alert(getApp().getStage(), AlertType.CONFIRMATION)
                         .header(header)
-                        .text(i18n.get("fx.application.message.changes_will_be_lost"))
+                        .text(i18n.get("dua3.fx.application.message.changes_will_be_lost"))
                         .buttons(bttDontSave, bttSave, ButtonType.CANCEL)
                         .showAndWait()
                         .ifPresent(btn -> {
@@ -153,11 +153,11 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
                         });
             }
             default -> {
-                String header = i18n.format("fx.application.message.unsaved.changes.multiple.documents", String.valueOf(dirtyList.size()));
+                String header = i18n.format("dua3.fx.application.message.unsaved.changes.multiple.documents", String.valueOf(dirtyList.size()));
 
                 Dialogs.alert(getApp().getStage(), AlertType.CONFIRMATION)
                         .header(header)
-                        .text(i18n.get("fx.application.message.continue_without_saving"))
+                        .text(i18n.get("dua3.fx.application.message.continue_without_saving"))
                         .buttons(ButtonType.YES, ButtonType.CANCEL)
                         .defaultButton(ButtonType.CANCEL)
                         .showAndWait()
@@ -240,7 +240,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
             return true;
         } catch (Exception e) {
             LOG.warn("error creating document", e);
-            getApp().showErrorDialog(i18n.get("fx.application.dialog.error.new_document"), e.getLocalizedMessage());
+            getApp().showErrorDialog(i18n.get("dua3.fx.application.dialog.error.new_document"), e.getLocalizedMessage());
             return false;
         }
     }
@@ -299,7 +299,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
         } catch (Exception e) {
             LOG.warn("error opening document", e);
             getApp().showErrorDialog(
-                    i18n.format("fx.application.dialog.error.open.document.{0.name}", FxApplication.asText(uri)),
+                    i18n.format("dua3.fx.application.dialog.error.open.document.{0.name}", FxApplication.asText(uri)),
                     String.valueOf(e.getLocalizedMessage())
             );
             return false;
@@ -471,7 +471,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
         } catch (Exception e) {
             LOG.warn("error saving document", e);
             getApp().showErrorDialog(
-                    i18n.format("fx.application.dialog.error.save.{0.document}", FxApplication.asText(uri)),
+                    i18n.format("dua3.fx.application.dialog.error.save.{0.document}", FxApplication.asText(uri)),
                     e.getLocalizedMessage()
             );
             return false;

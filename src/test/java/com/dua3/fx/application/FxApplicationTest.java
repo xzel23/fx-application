@@ -21,7 +21,7 @@ class FxApplicationTest extends FxTestBase {
      */
     static class TestApplication extends FxApplication<TestApplication, TestController> {
         TestApplication() {
-            super(I18N.getInstance(), null);
+            super("TestApplication", I18N.getInstance(), null);
         }
 
         @Override

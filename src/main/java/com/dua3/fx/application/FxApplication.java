@@ -15,13 +15,11 @@
 package com.dua3.fx.application;
 
 import com.dua3.utility.application.LicenseData;
-import com.dua3.utility.fx.controls.AboutDialogBuilder;
 import com.dua3.utility.fx.controls.Dialogs;
 import com.dua3.utility.i18n.I18N;
 import com.dua3.utility.io.IoUtil;
 import com.dua3.utility.lang.LangUtil;
 import com.dua3.utility.lang.Platform;
-import com.dua3.utility.text.TextUtil;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -68,50 +66,55 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
      * Logger
      */
     protected static final Logger LOG = LogManager.getLogger(FxApplication.class);
-    /**
-     * The command line argument to set the logging level (i.e. "--log=FINE").
-     */
-    protected static final String ARG_LOG_LEVEL = "log";
+
+    // - constants -
+
     /**
      * Marker to indicate modified state in title.
      */
     protected static final String MARKER_MODIFIED = "*";
 
-    // - constants -
     /**
      * Marker to indicate unmodified state in title.
      */
     protected static final String MARKER_UNMODIFIED = " ";
+
     /**
      * The name of the default bundle that is used if the application does not provide its own bundle.
      */
-    private static final String DEFAULT_BUNDLE_NAME = "fxapp";
+    private static final String BUNDLE_NAME = "fxapplication";
+
     /**
-     * Represents the key for retrieving the application name from the resource bundle.
+     * The application name.
      */
-    private static final String FX_APPLICATION_NAME = "fx.application.name";
-    /**
-     * List of Resource cleanup tasks to run on application stop.
-     */
-    private final List<Runnable> cleanupActions = new ArrayList<>();
+    private final String applicationName;
+
     /**
      * The resource bundle
      */
     protected final I18N i18n;
+
     /**
      * The directory containing application data.
      */
     protected final Path dataDir = initApplicationDataDir();
+
     /**
      * The current license used for the application.
      */
     private @Nullable LicenseData license;
+
+    /**
+     * List of Resource cleanup tasks to run on application stop.
+     */
+    private final List<Runnable> cleanupActions = new ArrayList<>();
 
     // - instance -
     /**
      * Preferences
      */
     protected @Nullable Preferences preferences;
+
     /**
      * The controller instance.
      */
@@ -130,12 +133,14 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
     /**
      * Constructor.
      *
+     * @param applicationName the name of the application
      * @param i18n the I18N instance for retrieving resources
      * @param license the license, if software is licensed
      */
-    protected FxApplication(I18N i18n, @Nullable LicenseData license) {
+    protected FxApplication(String applicationName, I18N i18n, @Nullable LicenseData license) {
+        this.applicationName = applicationName;
         this.i18n = i18n;
-        this.i18n.mergeBundle(FxApplication.class.getPackageName() + ".application", i18n.getLocale());
+        this.i18n.mergeBundle(FxApplication.class.getPackageName() + "." + BUNDLE_NAME, i18n.getLocale());
         this.license = license;
     }
 
@@ -166,7 +171,7 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
     public static ResourceBundle getFxAppBundle(Locale locale) {
         // load resource bundle
         LOG.debug("current locale is: {}", locale);
-        ResourceBundle resources = ResourceBundle.getBundle(FxApplication.class.getPackageName() + "." + DEFAULT_BUNDLE_NAME, locale);
+        ResourceBundle resources = ResourceBundle.getBundle(FxApplication.class.getPackageName() + "." + BUNDLE_NAME, locale);
         if (!Objects.equals(resources.getLocale(), locale)) {
             LOG.warn("resource bundle uses fallback locale: {}", resources.getLocale());
         }
@@ -238,7 +243,7 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
             getCss().ifPresent(css -> scene.getStylesheets().add(css.toExternalForm()));
 
             // setup stage
-            primaryStage.setTitle(i18n.get(FX_APPLICATION_NAME));
+            primaryStage.setTitle(applicationName);
             primaryStage.setScene(scene);
 
             // automatically update title on document change
@@ -315,14 +320,14 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
      */
     protected void updateApplicationTitle() {
         StringBuilder title = new StringBuilder();
-        title.append(i18n.get(FX_APPLICATION_NAME));
+        title.append(applicationName);
 
         FxDocument document = getController().getCurrentDocument().orElse(null);
 
         if (document != null) {
             String locStr = document.hasLocation() ?
                     asText(document.getLocation()) :
-                    i18n.get("fx.application.text.untitled");
+                    i18n.get("dua3.fx.application.text.untitled");
             boolean dirty = document.isDirty();
 
             if (!locStr.isEmpty() || document.isDirty()) {
@@ -485,7 +490,7 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
      */
     public void showErrorDialog(String header, String text) {
         Dialogs.alert(mainStage, AlertType.ERROR)
-                .title("%s", i18n.get("fx.application.dialog.error.title"))
+                .title("%s", i18n.get("dua3.fx.application.dialog.error.title"))
                 .header("%s", header)
                 .text("%s", text)
                 .build()
@@ -536,49 +541,7 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
      * @return file extension filter accepting all files
      */
     public FileChooser.ExtensionFilter getExtensionFilterAllFiles() {
-        return new FileChooser.ExtensionFilter(i18n.get("fx.application.filter.all_files"), "*.*");
-    }
-
-    /**
-     * Show this application's about dialog.
-     */
-    public void showAboutDialog() {
-        showAboutDialog(null);
-    }
-
-    /**
-     * Show this application's about dialog.
-     *
-     * @param css URL to the CSS data
-     */
-    protected void showAboutDialog(@Nullable URL css) {
-        AboutDialogBuilder aboutDialogBuilder = Dialogs.about(mainStage)
-                .title(i18n.format("fx.application.about.title.{0.name}", i18n.get(FX_APPLICATION_NAME)))
-                .applicationName(i18n.get(FX_APPLICATION_NAME))
-                .version(getVersion())
-                .copyright(i18n.get("fx.application.about.copyright"))
-                .graphic(LangUtil.getResourceURL(
-                        getClass(),
-                        i18n.get("fx.application.about.graphic"),
-                        i18n.getLocale()))
-                .mail(
-                        i18n.get("fx.application.about.email"),
-                        TextUtil.generateMailToLink(
-                                i18n.get("fx.application.about.email"),
-                                i18n.get(FX_APPLICATION_NAME)
-                                        + " "
-                                        + getVersion()))
-                .expandableContent(i18n.get("fx.application.about.detail"));
-
-        getLicense().ifPresent(license -> {
-            aboutDialogBuilder.license(license);
-        });
-
-        if (css != null) {
-            aboutDialogBuilder.css(css);
-        }
-
-        aboutDialogBuilder.build().showAndWait();
+        return new FileChooser.ExtensionFilter(i18n.get("dua3.fx.application.filter.all_files"), "*.*");
     }
 
     /**
