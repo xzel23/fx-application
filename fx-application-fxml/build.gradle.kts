@@ -14,11 +14,6 @@
 
 project.description = "JavaFX utilities (application using FXML)"
 
-javafx {
-    version = rootProject.libs.versions.javafx.get()
-    modules("javafx.controls", "javafx.fxml")
-}
-
 dependencies {
     api(rootProject.libs.dua3.utility)
     api(rootProject.libs.dua3.utility.fx)

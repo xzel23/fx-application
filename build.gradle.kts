@@ -17,13 +17,11 @@ plugins {
     id("signing")
     id("idea")
     id("jacoco-report-aggregation")
+    alias(libs.plugins.jdk)
     alias(libs.plugins.versions)
     alias(libs.plugins.test.logger)
     alias(libs.plugins.spotbugs)
     alias(libs.plugins.cabe)
-    alias(libs.plugins.forbiddenapis)
-    alias(libs.plugins.javafx)
-    alias(libs.plugins.jmh)
     alias(libs.plugins.sonar)
     alias(libs.plugins.jreleaser)
 }
@@ -50,12 +48,6 @@ object Meta {
 /////////////////////////////////////////////////////////////////////////////
 
 project.description = Meta.DESCRIPTION
-
-// JavaFX configuration for root module (fx-application)
-javafx {
-    version = libs.versions.javafx.get()
-    modules("javafx.controls")
-}
 
 // Configure tests to run in a forked VM for the root module
 tasks.test {
@@ -125,7 +117,7 @@ allprojects {
     apply(plugin = "version-catalog")
     apply(plugin = "signing")
     apply(plugin = "idea")
-    apply(plugin = rootProject.libs.plugins.javafx.get().pluginId)
+    apply(plugin = rootProject.libs.plugins.jdk.get().pluginId)
     apply(plugin = rootProject.libs.plugins.versions.get().pluginId)
     apply(plugin = rootProject.libs.plugins.test.logger.get().pluginId)
 
@@ -136,19 +128,17 @@ allprojects {
         apply(plugin = "jvm-test-suite")
         apply(plugin = rootProject.libs.plugins.spotbugs.get().pluginId)
         apply(plugin = rootProject.libs.plugins.cabe.get().pluginId)
-        apply(plugin = rootProject.libs.plugins.forbiddenapis.get().pluginId)
-        apply(plugin = rootProject.libs.plugins.jmh.get().pluginId)
+    }
+
+    // Java configuration
+    jdk {
+        version = 21
+        javaFxBundled = true
     }
 
     // Java configuration for non-BOM projects
     if (!project.name.endsWith("-bom")) {
         java {
-            toolchain {
-                languageVersion.set(JavaLanguageVersion.of(21))
-            }
-            targetCompatibility = JavaVersion.VERSION_21
-            sourceCompatibility = targetCompatibility
-
             withJavadocJar()
             withSourcesJar()
         }
@@ -247,39 +237,24 @@ allprojects {
     if (!project.name.endsWith("-bom")) {
         tasks.compileJava {
             options.encoding = "UTF-8"
-            options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:-module"))
+            options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:-module", "-Xlint:unchecked"))
             options.javaModuleVersion.set(provider { project.version as String })
-            options.release.set(java.targetCompatibility.majorVersion.toInt())
         }
         tasks.compileTestJava {
             options.encoding = "UTF-8"
+            options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:-module", "-Xlint:unchecked"))
         }
         tasks.javadoc {
             (options as StandardJavadocDocletOptions).apply {
                 encoding = "UTF-8"
                 addStringOption("Xdoclint:all,-missing/private")
+                locale = "en_US"
             }
         }
     }
 
-    // JMH config for non-BOM projects
+    // SpotBugs for non-BOM projects
     if (!project.name.endsWith("-bom")) {
-        jmh {
-            jmhVersion = rootProject.libs.versions.jmh
-            warmupIterations = 2
-            iterations = 5
-            fork = 1
-        }
-    }
-
-    // Forbidden APIs and SpotBugs for non-BOM projects
-    if (!project.name.endsWith("-bom")) {
-        // === FORBIDDEN APIS ===
-        tasks.withType(de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis::class).configureEach {
-            bundledSignatures = setOf("jdk-internal", "jdk-deprecated")
-            ignoreFailures = false
-        }
-
         // === SPOTBUGS ===
         spotbugs {
             toolVersion.set(rootProject.libs.versions.spotbugs)
