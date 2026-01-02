@@ -186,73 +186,6 @@ jobs:
       - name: Run tests
         run: gradle --no-daemon --build-cache test
 
-  sonar:
-    needs: test-linux
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: 'Set up JDK 21'
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'zulu'
-          java-version: '21'
-          java-package: 'jdk+fx'
-          cache: 'gradle'
-
-      # Download build artifacts first to get the Gradle version file
-      - name: Download build artifacts
-        uses: actions/download-artifact@v5
-        with:
-          name: build-artifacts
-          path: ${{ github.workspace }}
-
-      # Read Gradle version from the file created in the build job
-      - name: 'Read Gradle Version'
-        id: gradle-version
-        run: |
-          GRADLE_VERSION=$(cat build/gradle-version/version.txt)
-          echo "Detected Gradle version: $GRADLE_VERSION"
-          echo "gradle_version=$GRADLE_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: 'Setup Gradle'
-        uses: gradle/actions/setup-gradle@v5
-        with:
-          gradle-version: ${{ steps.gradle-version.outputs.gradle_version }}
-          gradle-home-cache-includes: |
-            caches
-            notifications
-            jdks
-            wrapper
-            toolchains
-
-      # Download coverage reports
-      - name: Download coverage reports
-        uses: actions/download-artifact@v5
-        with:
-          name: coverage-reports
-
-      - name: 'Cache SonarCloud packages'
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: 'Sonar Scan'
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: >
-          gradle --no-daemon --build-cache --no-parallel sonar
-          -Dsonar.projectKey=xzel23_fx-application
-          -Dsonar.organization=xzel23
-          -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.coverage.jacoco.xmlReportPaths=**/build/reports/jacoco/test/jacocoTestReport.xml
-
-
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [ test-linux, test-windows ]
@@ -318,8 +251,6 @@ jobs:
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
 
       - name: 'Get project version'
         id: version
