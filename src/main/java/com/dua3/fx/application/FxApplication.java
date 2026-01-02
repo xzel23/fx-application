@@ -158,7 +158,7 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
      *
      * @param license the {@link LicenseData} instance to associate with the application
      */
-    protected void setLicense(LicenseData license) {
+    protected void setLicense(@Nullable LicenseData license) {
         this.license = license;
     }
 
