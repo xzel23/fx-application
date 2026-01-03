@@ -387,6 +387,10 @@ allprojects {
 // Root project tasks and JReleaser configuration
 /////////////////////////////////////////////////////////////////////////////
 
+tasks.named<Jar>("javadocJar") {
+    dependsOn("aggregateJavadoc")
+}
+
 subprojects {
     // Task to publish to staging directory per subproject
     val publishToStagingDirectory by tasks.registering {
