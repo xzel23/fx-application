@@ -82,6 +82,15 @@ jobs:
           path: build/docs/javadoc
           if-no-files-found: error
 
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-build
+          path: |
+            **/build/reports/
+          if-no-files-found: warn
+
   test-linux:
     needs: build
     runs-on: ubuntu-latest
@@ -291,3 +300,12 @@ jobs:
           publish_dir: build/docs/javadoc
           destination_dir: ${{ env.DOC_PATH }}
           keep_files: true
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-publish
+          path: |
+            **/build/reports/
+          if-no-files-found: warn
