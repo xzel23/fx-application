@@ -141,13 +141,13 @@ jobs:
           DISPLAY: ":99"
 
       # Upload coverage reports
-      - name: Upload reports
-        if: always()
+      - name: Upload coverage reports
         uses: actions/upload-artifact@v4
         with:
-          name: reports-linux
+          name: coverage-reports
           path: |
-            **/build/reports/
+            **/build/reports/jacoco/test/jacocoTestReport.xml
+            **/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
           if-no-files-found: warn
 
   test-windows:
@@ -194,15 +194,6 @@ jobs:
 
       - name: Run tests
         run: gradle --no-daemon --build-cache test
-
-      - name: Upload reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: reports-windows
-          path: |
-            **/build/reports/
-          if-no-files-found: warn
 
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
