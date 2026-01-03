@@ -8,6 +8,9 @@
 import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.dua3.cabe.processor.Configuration
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.internal.extensions.stdlib.toDefaultLowerCase
 
 plugins {
@@ -47,6 +50,7 @@ object Meta {
 // Root project configuration
 /////////////////////////////////////////////////////////////////////////////
 
+project.version = libs.versions.projectVersion.get()
 project.description = Meta.DESCRIPTION
 
 tasks.register("printVersion") {
@@ -55,86 +59,7 @@ tasks.register("printVersion") {
     doLast { println(project.version) }
 }
 
-// add a task to create aggregate javadoc in the root projects build/docs/javadoc folder
-tasks.register<Javadoc>("aggregateJavadoc") {
-    group = "documentation"
-    description = "Generates aggregated Javadoc for all subprojects"
-    executable = jdk.jdkHome.get()
-        .file("bin/javadoc${if (System.getProperty("os.name").contains("Windows", ignoreCase = true)) ".exe" else ""}")
-        .toString()
-    setDestinationDir(layout.buildDirectory.dir("docs/javadoc").get().asFile)
-    setTitle("${rootProject.name} ${project.version} API")
-
-    // Disable module path inference
-    modularity.inferModulePath.set(false)
-
-    // Configure the task to depend on all subprojects' javadoc tasks
-    val filteredProjects = subprojects.filter {
-        !it.name.endsWith("-bom") && !it.name.contains("samples")
-    }
-
-    dependsOn(filteredProjects.map { it.tasks.named("javadoc") })
-
-    // Collect all Java source directories from subprojects, excluding module-info.java files
-    source(filteredProjects.flatMap { project ->
-        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-        val main = sourceSets.findByName("main")
-        main?.allJava?.filter { file ->
-            !file.name.equals("module-info.java")
-        } ?: files()
-    })
-
-    // Collect all classpaths from subprojects
-    classpath = files(filteredProjects.flatMap { project ->
-        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-        val main = sourceSets.findByName("main")
-        main?.compileClasspath ?: files()
-    })
-
-    // Add runtime classpath to ensure all dependencies are available
-    classpath += files(filteredProjects.flatMap { project ->
-        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-        val main = sourceSets.findByName("main")
-        main?.runtimeClasspath ?: files()
-    })
-
-    // Apply the same Javadoc options as in subprojects
-    (options as StandardJavadocDocletOptions).apply {
-        encoding = "UTF-8"
-        addStringOption("Xdoclint:all,-missing/private")
-        links("https://docs.oracle.com/en/java/javase/21/docs/api/")
-        use(true)
-        noTimestamp(true)
-        windowTitle = "${rootProject.name} ${project.version} API"
-        docTitle = "${rootProject.name} ${project.version} API"
-        header = "${rootProject.name} ${project.version} API"
-        // Set locale to English to ensure consistent language in generated documentation
-        locale = "en_US"
-        // Disable module path to avoid module-related errors
-        addBooleanOption("module-path", false)
-    }
-}
-
-// Configure tests to run in a forked VM for the root module
-tasks.test {
-    useJUnitPlatform()
-
-    // Run tests in a forked VM
-    forkEvery = 1
-
-    // Set JVM arguments for the forked VM
-    jvmArgs = listOf(
-        "-Djava.awt.headless=true",
-        "-Dtestfx.robot=glass",
-        "-Dtestfx.headless=true",
-        "-Dprism.order=sw"
-    )
-
-    // Print test output to console
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
-}
+// Aggregate all subprojects for JaCoCo report aggregation
 
 dependencies {
     // Aggregate modules for JaCoCo report aggregation
@@ -160,6 +85,16 @@ sonar {
     }
 }
 
+// check for development/release version
+fun isDevelopmentVersion(versionString: String): Boolean {
+    val v = versionString.toDefaultLowerCase()
+    val markers = listOf("snapshot", "alpha", "beta")
+    return markers.any { marker -> v.contains("-$marker") || v.contains(".$marker") }
+}
+
+val isReleaseVersion = !isDevelopmentVersion(project.version.toString())
+val isSnapshot = project.version.toString().toDefaultLowerCase().contains("snapshot")
+
 /////////////////////////////////////////////////////////////////////////////
 // Subprojects configuration
 /////////////////////////////////////////////////////////////////////////////
@@ -168,15 +103,6 @@ allprojects {
 
     // Set project version from root libs.versions
     project.version = rootProject.libs.versions.projectVersion.get()
-
-    fun isDevelopmentVersion(versionString: String): Boolean {
-        val v = versionString.toDefaultLowerCase()
-        val markers = listOf("snapshot", "alpha", "beta")
-        return markers.any { marker -> v.contains("-$marker") || v.contains(".$marker") }
-    }
-
-    val isReleaseVersion = !isDevelopmentVersion(project.version.toString())
-    val isSnapshot = project.version.toString().toDefaultLowerCase().contains("snapshot")
 
     // Apply common plugins
     apply(plugin = "maven-publish")
@@ -196,7 +122,6 @@ allprojects {
         apply(plugin = rootProject.libs.plugins.cabe.get().pluginId)
     }
 
-    // Java configuration
     jdk {
         version = 21
         javaFxBundled = true
@@ -207,12 +132,6 @@ allprojects {
         java {
             withJavadocJar()
             withSourcesJar()
-        }
-
-        if (project == rootProject) {
-            tasks.named<Jar>("javadocJar") {
-                dependsOn("aggregateJavadoc")
-            }
         }
 
         cabe {
@@ -327,6 +246,7 @@ allprojects {
 
     // SpotBugs for non-BOM projects
     if (!project.name.endsWith("-bom")) {
+
         // === SPOTBUGS ===
         spotbugs {
             toolVersion.set(rootProject.libs.versions.spotbugs)
@@ -393,6 +313,7 @@ allprojects {
 
                     pom {
                         name.set(project.name)
+                        description.set(project.description)
                         url.set(Meta.SCM)
 
                         licenses {
@@ -427,24 +348,12 @@ allprojects {
             }
         }
     }
-}
-
-subprojects {
-    // Task to publish to staging directory per subproject
-    val publishToStagingDirectory by tasks.registering {
-        group = "publishing"
-        description = "Publish artifacts to root staging directory for JReleaser"
-
-        dependsOn(tasks.withType<PublishToMavenRepository>().matching {
-            it.repository.name == "stagingDirectory"
-        })
-    }
 
     // Signing configuration deferred until after evaluation
     afterEvaluate {
         configure<SigningExtension> {
             val shouldSign = !project.version.toString().lowercase().contains("snapshot")
-            isRequired = shouldSign && gradle.taskGraph.hasTask("publish")
+            setRequired(shouldSign && gradle.taskGraph.hasTask("publish"))
 
             val publishing = project.extensions.getByType<PublishingExtension>()
 
@@ -478,6 +387,18 @@ subprojects {
 // Root project tasks and JReleaser configuration
 /////////////////////////////////////////////////////////////////////////////
 
+subprojects {
+    // Task to publish to staging directory per subproject
+    val publishToStagingDirectory by tasks.registering {
+        group = "publishing"
+        description = "Publish artifacts to root staging directory for JReleaser"
+
+        dependsOn(tasks.withType<PublishToMavenRepository>().matching {
+            it.repository.name == "stagingDirectory"
+        })
+    }
+}
+
 // Aggregate all subprojects' publishToStagingDirectory tasks into a root-level task
 tasks.register("publishToStagingDirectory") {
     group = "publishing"
@@ -486,9 +407,64 @@ tasks.register("publishToStagingDirectory") {
     dependsOn(subprojects.mapNotNull { it.tasks.findByName("publishToStagingDirectory") })
 }
 
-// Make jreleaserDeploy depend on the root-level publishToStagingDirectory task
-tasks.named("jreleaserDeploy") {
-    dependsOn("publishToStagingDirectory")
+// add a task to create aggregate javadoc in the root projects build/docs/javadoc folder
+tasks.register<Javadoc>("aggregateJavadoc") {
+    group = "documentation"
+    description = "Generates aggregated Javadoc for all subprojects"
+    executable = jdk.jdkHome.get()
+        .file("bin/javadoc${if (System.getProperty("os.name").contains("Windows", ignoreCase = true)) ".exe" else ""}")
+        .toString()
+    setDestinationDir(layout.buildDirectory.dir("docs/javadoc").get().asFile)
+    setTitle("${rootProject.name} ${project.version} API")
+
+    // Disable module path inference
+    modularity.inferModulePath.set(false)
+
+    // Configure the task to depend on all subprojects' javadoc tasks
+    val filteredProjects = subprojects.filter {
+        !it.name.endsWith("-bom") && !it.name.contains("samples")
+    }
+
+    dependsOn(filteredProjects.map { it.tasks.named("javadoc") })
+
+    // Collect all Java source directories from subprojects, excluding module-info.java files
+    source(filteredProjects.flatMap { project ->
+        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+        val main = sourceSets.findByName("main")
+        main?.allJava?.filter { file ->
+            !file.name.equals("module-info.java")
+        } ?: files()
+    })
+
+    // Collect all classpaths from subprojects
+    classpath = files(filteredProjects.flatMap { project ->
+        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+        val main = sourceSets.findByName("main")
+        main?.compileClasspath ?: files()
+    })
+
+    // Add runtime classpath to ensure all dependencies are available
+    classpath += files(filteredProjects.flatMap { project ->
+        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+        val main = sourceSets.findByName("main")
+        main?.runtimeClasspath ?: files()
+    })
+
+    // Apply the same Javadoc options as in subprojects
+    (options as StandardJavadocDocletOptions).apply {
+        encoding = "UTF-8"
+        addStringOption("Xdoclint:all,-missing/private")
+        links("https://docs.oracle.com/en/java/javase/21/docs/api/")
+        use(true)
+        noTimestamp(true)
+        windowTitle = "${rootProject.name} ${project.version} API"
+        docTitle = "${rootProject.name} ${project.version} API"
+        header = "${rootProject.name} ${project.version} API"
+        // Set locale to English to ensure consistent language in generated documentation
+        locale = "en_US"
+        // Disable module path to avoid module-related errors
+        addBooleanOption("module-path", false)
+    }
 }
 
 jreleaser {
@@ -517,52 +493,33 @@ jreleaser {
 
     deploy {
         maven {
-            mavenCentral {
-                create("release-deploy") {
-                    active.set(org.jreleaser.model.Active.RELEASE)
-                    url.set("https://central.sonatype.com/api/v1/publisher")
-                    stagingRepositories.add("build/staging-deploy")
-                    username.set(System.getenv("SONATYPE_USERNAME"))
-                    password.set(System.getenv("SONATYPE_PASSWORD"))
+            if (!isSnapshot) {
+                println("adding release-deploy")
+                mavenCentral {
+                    create("release-deploy") {
+                        active.set(org.jreleaser.model.Active.RELEASE)
+                        url.set("https://central.sonatype.com/api/v1/publisher")
+                        stagingRepositories.add("build/staging-deploy")
+                        username.set(System.getenv("SONATYPE_USERNAME"))
+                        password.set(System.getenv("SONATYPE_PASSWORD"))
+                    }
+                }
+            } else {
+                println("adding snapshot-deploy")
+                nexus2 {
+                    create("snapshot-deploy") {
+                        active.set(org.jreleaser.model.Active.SNAPSHOT)
+                        snapshotUrl.set("https://central.sonatype.com/repository/maven-snapshots/")
+                        applyMavenCentralRules.set(true)
+                        snapshotSupported.set(true)
+                        closeRepository.set(true)
+                        releaseRepository.set(true)
+                        stagingRepositories.add("build/staging-deploy")
+                        username.set(System.getenv("SONATYPE_USERNAME"))
+                        password.set(System.getenv("SONATYPE_PASSWORD"))
+                    }
                 }
             }
-            nexus2 {
-                create("snapshot-deploy") {
-                    active.set(org.jreleaser.model.Active.SNAPSHOT)
-                    snapshotUrl.set("https://central.sonatype.com/repository/maven-snapshots/")
-                    applyMavenCentralRules.set(true)
-                    verifyPom.set(false)
-                    snapshotSupported.set(true)
-                    closeRepository.set(true)
-                    releaseRepository.set(true)
-                    stagingRepositories.add("build/staging-deploy")
-                    username.set(System.getenv("SONATYPE_USERNAME"))
-                    password.set(System.getenv("SONATYPE_PASSWORD"))
-                }
-            }
-        }
-    }
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Utility tasks
-/////////////////////////////////////////////////////////////////////////////
-
-// Task to generate JReleaser configuration file for reference
-tasks.register("generateJReleaserConfig") {
-    description = "Generates JReleaser configuration file for reference"
-    group = "documentation"
-
-    doLast {
-        val process = ProcessBuilder("./gradlew", "jreleaserConfig", "-PconfigFile=jreleaser-config.yml")
-            .directory(project.rootDir)
-            .inheritIO()
-            .start()
-        val exitCode = process.waitFor()
-        if (exitCode == 0) {
-            println("JReleaser configuration file generated at: jreleaser-config.yml")
-        } else {
-            println("Failed to generate JReleaser configuration file. Exit code: $exitCode")
         }
     }
 }
