@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.gradle.internal.extensions.stdlib.toDefaultLowerCase
 
 rootProject.name = "fx-application"
@@ -5,10 +7,15 @@ val projectVersion = "3.0.0"
 
 include(":fx-application-fxml")
 
+// define dependency versions and repositories
 dependencyResolutionManagement {
 
     val isSnapshot = projectVersion.toDefaultLowerCase().contains("-snapshot")
     val isReleaseCandidate = !isSnapshot && projectVersion.toDefaultLowerCase().contains("-rc")
+
+    if (isSnapshot && !projectVersion.endsWith("-SNAPSHOT")) {
+        throw GradleException("inconsistent version definition: $projectVersion does not end with SNAPSHOT")
+    }
 
     versionCatalogs {
         create("libs") {
@@ -16,9 +23,9 @@ dependencyResolutionManagement {
 
             plugin("jdk", "com.dua3.gradle.jdkprovider").version("0.4.0")
             plugin("cabe", "com.dua3.cabe").version("3.3.0")
+            plugin("sonar", "org.sonarqube").version("7.2.2.6593")
             plugin("jmh", "me.champeau.jmh").version("0.7.3")
             plugin("jreleaser", "org.jreleaser").version("1.22.0")
-            plugin("sonar", "org.sonarqube").version("7.2.0.6526")
             plugin("spotbugs", "com.github.spotbugs").version("6.4.8")
             plugin("test-logger", "com.adarshr.test-logger").version("4.0.0")
             plugin("versions", "com.github.ben-manes.versions").version("0.53.0")
@@ -80,8 +87,6 @@ dependencyResolutionManagement {
 
         if (isSnapshot) {
             println("snapshot version detected, adding Maven snapshot repositories")
-
-            mavenLocal()
 
             // Sonatype Snapshots
             maven {
