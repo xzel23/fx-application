@@ -391,24 +391,19 @@ tasks.named<Jar>("javadocJar") {
     dependsOn("aggregateJavadoc")
 }
 
-subprojects {
-    // Task to publish to staging directory per subproject
-    val publishToStagingDirectory by tasks.registering {
+allprojects {
+    tasks.register("publishToStagingDirectory") {
         group = "publishing"
         description = "Publish artifacts to root staging directory for JReleaser"
 
         dependsOn(tasks.withType<PublishToMavenRepository>().matching {
             it.repository.name == "stagingDirectory"
         })
+
+        if (project == rootProject) {
+            dependsOn(subprojects.mapNotNull { it.tasks.findByName("publishToStagingDirectory") })
+        }
     }
-}
-
-// Aggregate all subprojects' publishToStagingDirectory tasks into a root-level task
-tasks.register("publishToStagingDirectory") {
-    group = "publishing"
-    description = "Publish all subprojects' artifacts to root staging directory for JReleaser"
-
-    dependsOn(subprojects.mapNotNull { it.tasks.findByName("publishToStagingDirectory") })
 }
 
 // add a task to create aggregate javadoc in the root projects build/docs/javadoc folder
