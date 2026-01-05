@@ -3,7 +3,7 @@
 import org.gradle.internal.extensions.stdlib.toDefaultLowerCase
 
 rootProject.name = "fx-application"
-val projectVersion = "3.0.0"
+val projectVersion = "3.0.1-SNAPSHOT"
 
 include(":fx-application-fxml")
 
@@ -30,7 +30,7 @@ dependencyResolutionManagement {
             plugin("test-logger", "com.adarshr.test-logger").version("4.0.0")
             plugin("versions", "com.github.ben-manes.versions").version("0.53.0")
 
-            version("dua3-utility", "20.4.1")
+            version("dua3-utility", "20.4.2")
             version("jmh", "1.37")
             version("jspecify", "1.0.0")
             version("junit-bom", "6.0.1")
