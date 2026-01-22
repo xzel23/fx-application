@@ -30,12 +30,13 @@ dependencyResolutionManagement {
             plugin("test-logger", "com.adarshr.test-logger").version("4.0.0")
             plugin("versions", "com.github.ben-manes.versions").version("0.53.0")
 
-            version("dua3-utility", "20.4.2")
+            version("dua3-utility", "21-beta")
             version("jmh", "1.37")
             version("jspecify", "1.0.0")
             version("junit-bom", "6.0.1")
             version("log4j-bom", "2.25.3")
             version("spotbugs", "4.9.8")
+            version("slb4j", "0.1-beta2")
 
             library("dua3-utility-bom", "com.dua3.utility", "utility-bom").versionRef("dua3-utility")
             library("dua3-utility", "com.dua3.utility", "utility").withoutVersion()
@@ -53,11 +54,9 @@ dependencyResolutionManagement {
             library("junit-platform-launcher", "org.junit.platform", "junit-platform-launcher").withoutVersion()
             library("log4j-bom", "org.apache.logging.log4j", "log4j-bom").versionRef("log4j-bom")
             library("log4j-api", "org.apache.logging.log4j", "log4j-api").withoutVersion()
-            library("log4j-core", "org.apache.logging.log4j", "log4j-core").withoutVersion()
-            library("log4j-jul", "org.apache.logging.log4j", "log4j-jul").withoutVersion()
-            library("log4j-jcl", "org.apache.logging.log4j", "log4j-jcl").withoutVersion()
-            library("log4j-slf4j2", "org.apache.logging.log4j", "log4j-slf4j2-impl").withoutVersion()
-            library("log4j-to-slf4j", "org.apache.logging.log4j", "log4j-to-slf4j").withoutVersion()
+            library("slb4j", "org.slb4j", "slb4j").versionRef("slb4j")
+            library("slb4j-ext", "org.slb4j", "slb4j-ext").versionRef("slb4j")
+            library("slb4j-ext-fx", "org.slb4j", "slb4j-ext-fx").versionRef("slb4j")
         }
     }
 
