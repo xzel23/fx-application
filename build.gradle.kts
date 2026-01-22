@@ -170,8 +170,6 @@ allprojects {
 
             // Root module (fx-application) dependencies
             api(rootProject.libs.dua3.utility)
-            api(rootProject.libs.dua3.utility.logging)
-            api(rootProject.libs.dua3.utility.logging.log4j)
             api(rootProject.libs.dua3.utility.fx)
             api(rootProject.libs.dua3.utility.fx.controls)
 
@@ -249,7 +247,7 @@ allprojects {
 
         // === SPOTBUGS ===
         spotbugs {
-            toolVersion.set(rootProject.libs.versions.spotbugs)
+            toolVersion.set(rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs").findVersion("spotbugs").get().requiredVersion)
             excludeFilter.set(rootProject.file("spotbugs-exclude.xml"))
         }
 
