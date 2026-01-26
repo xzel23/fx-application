@@ -226,12 +226,12 @@ allprojects {
     if (!project.name.endsWith("-bom")) {
         tasks.compileJava {
             options.encoding = "UTF-8"
-            options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:-module", "-Xlint:unchecked"))
+            options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:-module"))
             options.javaModuleVersion.set(provider { project.version as String })
         }
         tasks.compileTestJava {
             options.encoding = "UTF-8"
-            options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:-module", "-Xlint:unchecked"))
+            options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:-module"))
         }
         tasks.javadoc {
             (options as StandardJavadocDocletOptions).apply {
