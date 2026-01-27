@@ -1,5 +1,5 @@
 [versions]
-cabe = "4.0.2"
+cabe = "4.1"
 jdk = "0.4.0"
 jmh-plugin = "0.7.3"
 jreleaser = "1.22.0"
@@ -8,12 +8,12 @@ spotbugs-plugin = "6.4.8"
 test-logger = "4.0.0"
 versions = "0.53.0"
 
-dua3-utility = "21-rc"
+dua3-utility = "21-rc2"
 jmh = "1.37"
 jspecify = "1.0.0"
-junit-bom = "6.0.1"
+junit-bom = "6.0.2"
 log4j-bom = "2.25.3"
-slb4j = "0.1-rc"
+slb4j = "0.1-rc3"
 spotbugs = "4.9.8"
 
 [libraries]
