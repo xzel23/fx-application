@@ -167,7 +167,6 @@ allprojects {
     // Dependencies for non-BOM projects
     if (!project.name.endsWith("-bom")) {
         dependencies {
-
             // Root module (fx-application) dependencies
             api(rootProject.libs.dua3.utility)
             api(rootProject.libs.dua3.utility.fx)
@@ -181,6 +180,7 @@ allprojects {
             testImplementation(platform(rootProject.libs.junit.bom))
             testImplementation(rootProject.libs.junit.jupiter.api)
             testRuntimeOnly(rootProject.libs.junit.jupiter.engine)
+            testRuntimeOnly(rootProject.libs.slb4j)
         }
 
         idea {
