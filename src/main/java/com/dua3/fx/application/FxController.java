@@ -95,7 +95,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
     /**
      * Request application close as if the close-window-button was clicked.
      */
-    public void closeApplicationWindow() {
+    public void requestCloseApplicationWindow() {
         // handle dirty state
         if (!handleDirtyState()) {
             LOG.debug("close aborted because of dirty state");

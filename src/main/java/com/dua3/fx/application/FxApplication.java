@@ -266,7 +266,7 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
 
             primaryStage.setOnCloseRequest(e -> {
                 e.consume();
-                controller.closeApplicationWindow();
+                controller.requestCloseApplicationWindow();
             });
 
             primaryStage.show();
@@ -359,7 +359,7 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
             try {
                 task.run();
             } catch (Exception e) {
-                LOG.warn("error in cleanup task", e);
+                LOG.warn("error in cleanup task, ignored: {}", e.getMessage(), e);
             }
         });
     }
@@ -374,7 +374,7 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
             try {
                 getPreferences().flush();
             } catch (BackingStoreException e) {
-                LOG.warn("could not update preferences", e);
+                LOG.warn("could not update preferences: {}", e.getMessage(), e);
             }
         }
 
