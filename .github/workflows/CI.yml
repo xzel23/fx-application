@@ -60,8 +60,7 @@ jobs:
           path: |
             **/build/libs/*.jar
             **/build/classes/
-            **/build/classes/java/test/
-            **/build/classes/kotlin/test/
+            **/build/classes-cabe/
             build/gradle-version/version.txt
           path-root: ${{ github.workspace }}
           if-no-files-found: error
