@@ -1,6 +1,6 @@
 [versions]
 cabe = "4.2.0"
-jdk = "0.5.1"
+jdk = "0.5.2"
 jmh-plugin = "0.7.3"
 jreleaser = "1.23.0"
 sonar = "7.2.3.7755"
@@ -8,7 +8,7 @@ spotbugs-plugin = "6.4.8"
 test-logger = "4.0.0"
 versions = "0.53.0"
 
-dua3-utility = "22.0.0"
+dua3-utility = "22.0.1"
 jmh = "1.37"
 jspecify = "1.0.0"
 junit-bom = "6.0.3"
