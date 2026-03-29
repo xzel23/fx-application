@@ -132,7 +132,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
                 if (!doc.hasLocation()) {
                     header = i18n.get("dua3.fx.application.message.unsaved.changes.untitled");
                 } else {
-                    header = i18n.format("dua3.fx.application.message.unsaved.changes.{0.document}", dirtyList.getFirst().getName());
+                    header = i18n.format("dua3.fx.application.message.unsaved.changes.$0(document)", dirtyList.getFirst().getName());
                 }
 
                 ButtonType bttSave = new ButtonType(i18n.get("dua3.fx.application.button.save"), ButtonBar.ButtonData.YES);
@@ -299,7 +299,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
         } catch (Exception e) {
             LOG.warn("error opening document", e);
             getApp().showErrorDialog(
-                    i18n.format("dua3.fx.application.dialog.error.open.document.{0.name}", FxApplication.asText(uri)),
+                    i18n.format("dua3.fx.application.dialog.error.open.document.$0(name)", FxApplication.asText(uri)),
                     String.valueOf(e.getLocalizedMessage())
             );
             return false;
@@ -471,7 +471,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
         } catch (Exception e) {
             LOG.warn("error saving document", e);
             getApp().showErrorDialog(
-                    i18n.format("dua3.fx.application.dialog.error.save.{0.document}", FxApplication.asText(uri)),
+                    i18n.format("dua3.fx.application.dialog.error.save.$0(document)", FxApplication.asText(uri)),
                     e.getLocalizedMessage()
             );
             return false;
