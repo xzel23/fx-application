@@ -3,7 +3,7 @@
 import org.gradle.internal.extensions.stdlib.toDefaultLowerCase
 
 rootProject.name = "fx-application"
-val projectVersion = "4.1.1"
+val projectVersion = "4.1.2-SNAPSHOT"
 
 include(":fx-application-fxml")
 
