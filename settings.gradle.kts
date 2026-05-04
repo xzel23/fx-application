@@ -19,11 +19,13 @@ fun versionCatalogVersion(alias: String): String {
 
 val projectVersion = versionCatalogVersion("projectVersion")
 
-gradle.beforeProject {
-    version = projectVersion
-}
-
 include(":fx-application-fxml")
+
+gradle.projectsLoaded {
+    rootProject.allprojects {
+        version = projectVersion
+    }
+}
 
 // define dependency versions and repositories
 dependencyResolutionManagement {
