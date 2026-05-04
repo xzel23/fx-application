@@ -1,5 +1,5 @@
 [versions]
-projectVersion = "4.1.2"
+projectVersion = "4.2.0"
 cabe = "4.2.0"
 jdk = "0.6.0"
 jmh-plugin = "0.7.3"
