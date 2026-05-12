@@ -1,7 +1,7 @@
 [versions]
 projectVersion = "4.3.0"
 cabe = "4.2.0"
-jdk = "0.6.0"
+jdk = "0.7.0-beta5"
 jmh-plugin = "0.7.3"
 jreleaser = "1.24.0"
 sonar = "7.3.0.8198"
