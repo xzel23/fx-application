@@ -102,8 +102,8 @@ class FxControllerTest extends FxTestBase {
      * A simple implementation of FxDocument for testing.
      */
     static class TestDocument extends FxDocument {
-        private boolean writeWasCalled = false;
-        private boolean isDirty = false;
+        private boolean writeWasCalled;
+        private boolean isDirty;
 
         TestDocument() {
             super(VOID_URI);

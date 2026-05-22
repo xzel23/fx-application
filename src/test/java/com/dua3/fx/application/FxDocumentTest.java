@@ -100,7 +100,7 @@ class FxDocumentTest extends FxTestBase {
      * A simple implementation of FxDocument for testing.
      */
     static class TestDocument extends FxDocument {
-        private boolean writeWasCalled = false;
+        private boolean writeWasCalled;
 
         TestDocument() {
             super(VOID_URI);

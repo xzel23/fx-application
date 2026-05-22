@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
  */
 public abstract class FxTestBase {
 
-    private static boolean platformInitialized = false;
+    private static boolean platformInitialized;
     private static final Object lock = new Object();
 
     /**
