@@ -50,7 +50,7 @@ dependencyResolutionManagement {
         // Sonatype Releases
         maven {
             name = "central.sonatype.com-releases"
-            url = java.net.URI("https://oss.sonatype.org/content/repositories/releases/")
+            url = java.net.URI("https://central.sonatype.com/content/repositories/releases/")
             mavenContent {
                 releasesOnly()
             }
