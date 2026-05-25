@@ -128,6 +128,9 @@ val isSnapshot = project.version.toString().toDefaultLowerCase().contains("snaps
 /////////////////////////////////////////////////////////////////////////////
 
 allprojects {
+    dependencyLocking {
+        lockAllConfigurations()
+    }
 
     // Apply common plugins
     apply(plugin = "maven-publish")

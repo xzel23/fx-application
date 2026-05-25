@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 import org.gradle.internal.extensions.stdlib.toDefaultLowerCase
 
 rootProject.name = "fx-application"
@@ -69,6 +67,8 @@ dependencyResolutionManagement {
 
         if (isSnapshot) {
             println("snapshot version detected, adding Maven snapshot repositories")
+
+            mavenLocal()
 
             // Sonatype Snapshots
             maven {
