@@ -1,6 +1,6 @@
 [versions]
 projectVersion = "4.3.3-SNAPSHOT"
-cabe-plugin = "4.3.0-rc"
+cabe-plugin = "4.3.0-rc2"
 jdkprovider-plugin = "0.7.0"
 jmh-plugin = "0.7.3"
 jreleaser-plugin = "1.24.0"
