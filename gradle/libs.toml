@@ -1,6 +1,6 @@
 [versions]
 projectVersion = "4.3.3-SNAPSHOT"
-cabe-plugin = "4.3.0-rc2"
+cabe-plugin = "4.3.0"
 jdkprovider-plugin = "0.7.0"
 jmh-plugin = "0.7.3"
 jreleaser-plugin = "1.24.0"
@@ -9,11 +9,11 @@ spotbugs-plugin = "6.5.5"
 test-logger-plugin = "4.0.0"
 versions-plugin = "0.54.0"
 
-dua3-utility = "22.4.0-SNAPSHOT"
+dua3-utility = "22.4.0"
 jspecify = "1.0.0"
 junit-bom = "6.1.0"
 log4j-bom = "2.26.0"
-slb4j = "0.10.0"
+slb4j = "0.11.0"
 
 [libraries]
 dua3-utility = { group = "com.dua3.utility", name = "utility" }
