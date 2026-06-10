@@ -25,7 +25,6 @@ import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 
 import java.net.URL;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -73,9 +72,7 @@ public abstract class FxApplicationFxml<A extends FxApplicationFxml<A, C>, C ext
 
         // set controller
         LOG.debug("setting FXML controller");
-        C controller = Objects.requireNonNull(loader.getController(),
-                () -> "controller is null; set fx:controller in root element of FXML (" + fxml + ")");
-        setController(controller);
+        setController(loader.getController());
 
         return root;
     }
