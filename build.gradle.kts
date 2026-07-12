@@ -151,7 +151,7 @@ allprojects {
     }
 
     jdk {
-        version = 21
+        version = rootProject.libs.versions.jdkVersion.get().toInt()
         javaFxBundled = true
     }
 

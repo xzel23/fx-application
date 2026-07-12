@@ -1,5 +1,6 @@
 [versions]
 projectVersion = "4.5.0"
+jdkVersion = "21"
 cabe-plugin = "4.4.0"
 jdkprovider-plugin = "0.8.0"
 jmh-plugin = "0.7.3"
