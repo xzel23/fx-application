@@ -6,7 +6,7 @@ jdkprovider-plugin = "0.8.0"
 jmh-plugin = "0.7.3"
 jreleaser-plugin = "1.24.0"
 sonar-plugin = "7.3.1.8318"
-spotbugs-plugin = "6.5.8"
+spotbugs-plugin = "6.5.9"
 test-logger-plugin = "4.0.0"
 versions-plugin = "0.54.0"
 
