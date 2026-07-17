@@ -238,7 +238,7 @@ allprojects {
 
         testing {
             suites {
-                val test by getting(JvmTestSuite::class) {
+                val test = getByName<JvmTestSuite>("test") {
                     useJUnitJupiter()
                     dependencies {
                         implementation(rootProject.libs.slb4j)
@@ -577,14 +577,16 @@ allprojects {
     }
 
     tasks.withType<DependencyUpdatesTask> {
+        notCompatibleWithConfigurationCache("The gradle-versions-plugin does not support the configuration cache.")
+
         // refuse non-stable versions
         rejectVersionIf {
             !isStable(candidate.version)
         }
-
-        // dependencyUpdates fails in parallel mode with Gradle 9+ (https://github.com/ben-manes/gradle-versions-plugin/issues/968)
-        doFirst {
-            gradle.startParameter.isParallelProjectExecutionEnabled = false
-        }
     }
+}
+
+// dependencyUpdates fails in parallel mode with Gradle 9+ (https://github.com/ben-manes/gradle-versions-plugin/issues/968)
+if (gradle.startParameter.taskNames.any { it == "dependencyUpdates" || it.endsWith(":dependencyUpdates") }) {
+    gradle.startParameter.isParallelProjectExecutionEnabled = false
 }
