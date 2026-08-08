@@ -223,6 +223,7 @@ allprojects {
             testImplementation(platform(rootProject.libs.junit.bom))
             testImplementation(rootProject.libs.junit.jupiter.api)
             testRuntimeOnly(rootProject.libs.junit.jupiter.engine)
+            testRuntimeOnly(platform(rootProject.libs.slb4j.bom))
             testRuntimeOnly(rootProject.libs.slb4j)
         }
 
@@ -239,6 +240,7 @@ allprojects {
                 val test = getByName<JvmTestSuite>("test") {
                     useJUnitJupiter()
                     dependencies {
+                        implementation(platform(rootProject.libs.slb4j.bom))
                         implementation(rootProject.libs.slb4j)
                     }
                     targets {

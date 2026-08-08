@@ -8,14 +8,14 @@ jreleaser-plugin = "1.24.0"
 sonar-plugin = "7.4.0.8496"
 spotbugs-plugin = "6.5.9"
 test-logger-plugin = "4.0.0"
-versions-plugin = "0.57.0"
+versions-plugin = "0.60.0"
 
 dua3-utility = "24.0.0"
 
 jspecify = "1.0.1"
 junit-bom = "6.1.2"
 log4j-bom = "2.26.1"
-slb4j = "0.12.3"
+slb4j = "0.12.4"
 
 [libraries]
 dua3-utility = { group = "com.dua3.utility", name = "utility" }
@@ -30,9 +30,10 @@ junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engi
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 log4j-api = { group = "org.apache.logging.log4j", name = "log4j-api" }
 log4j-bom = { group = "org.apache.logging.log4j", name = "log4j-bom", version.ref = "log4j-bom" }
-slb4j = { group = "org.slb4j", name = "slb4j", version.ref = "slb4j" }
-slb4j-ext = { group = "org.slb4j", name = "slb4j-ext", version.ref = "slb4j" }
-slb4j-ext-fx = { group = "org.slb4j", name = "slb4j-ext-fx", version.ref = "slb4j" }
+slb4j-bom = { group = "org.slb4j", name = "slb4j-bom", version.ref = "slb4j" }
+slb4j = { group = "org.slb4j", name = "slb4j" }
+slb4j-ext = { group = "org.slb4j", name = "slb4j-ext" }
+slb4j-ext-fx = { group = "org.slb4j", name = "slb4j-ext-fx" }
 
 [plugins]
 cabe = { id = "com.dua3.cabe", version.ref = "cabe-plugin" }
