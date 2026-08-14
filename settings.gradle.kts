@@ -1,7 +1,7 @@
 import org.gradle.internal.extensions.stdlib.toDefaultLowerCase
 
 pluginManagement {
-    val versionsPluginVersion = Regex("""(?m)^\s*versions-plugin\s*=\s*"([^"]+)"""")
+    val versionsPluginVersion = Regex("""(?m)^[\t ]*versions-plugin[\t ]*=[\t ]*"([^"\r\n]+)"[\t ]*(?:#.*)?$""")
         .find(file("gradle/version.toml").readText())!!.groupValues[1]
     plugins {
         id("io.github.ben-manes.versions.settings") version versionsPluginVersion
@@ -21,7 +21,7 @@ fun versionCatalogVersion(alias: String): String {
         .drop(1)
         .takeWhile { !it.trim().startsWith("[") }
 
-    val versionDeclaration = Regex("""^\s*${Regex.escape(alias)}\s*=\s*"([^"]+)"\s*(?:#.*)?$""")
+    val versionDeclaration = Regex("""\h*${Regex.escape(alias)}\h*=\h*"([^"\r\n]+)"\h*(?:#.*)?""")
     return versions.firstNotNullOfOrNull { line ->
         versionDeclaration.matchEntire(line)?.groupValues?.get(1)
     } ?: throw GradleException("version '$alias' not found in ${catalog.path}")
