@@ -13,13 +13,13 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
       # Setup JDK 21 for build
       - name: 'Set up JDK 21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v.6.0.0
         with:
           distribution: 'liberica'
           java-version: |
@@ -40,7 +40,7 @@ jobs:
           echo "$GRADLE_VERSION" > build/gradle-version/version.txt
 
       - name: 'Setup Gradle'
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6.3.0
         with:
           gradle-version: ${{ steps.gradle-version.outputs.gradle_version }}
           gradle-home-cache-includes: |
@@ -56,7 +56,7 @@ jobs:
 
       # Upload build artifacts for other jobs to use
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: build-artifacts
           path: |
@@ -69,7 +69,7 @@ jobs:
 
       # Upload staging directory
       - name: 'Upload staging directory'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: staging-deploy
           path: build/staging-deploy
@@ -77,7 +77,7 @@ jobs:
 
       # Upload Javadoc
       - name: 'Upload Javadoc'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: javadoc
           path: build/docs/javadoc
@@ -85,7 +85,7 @@ jobs:
 
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: reports-build
           path: |
@@ -97,10 +97,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7.0.1
 
       - name: 'Set up JDK 21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v.6.0.0
         with:
           distribution: 'liberica'
           java-version: |
@@ -111,7 +111,7 @@ jobs:
 
       # Download build artifacts first to get the Gradle version file
       - name: Download build artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@8.0.1
         with:
           name: build-artifacts
           path: ${{ github.workspace }}
@@ -125,7 +125,7 @@ jobs:
           echo "gradle_version=$GRADLE_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: 'Setup Gradle'
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6.3.0
         with:
           gradle-version: ${{ steps.gradle-version.outputs.gradle_version }}
           gradle-home-cache-includes: |
@@ -145,7 +145,7 @@ jobs:
 
       # Upload coverage reports
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: coverage-reports
           path: |
@@ -158,10 +158,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7.0.1
 
       - name: 'Set up JDK 21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v.6.0.0
         with:
           distribution: 'liberica'
           java-version: |
@@ -172,7 +172,7 @@ jobs:
 
       # Download build artifacts first to get the Gradle version file
       - name: Download build artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@8.0.1
         with:
           name: build-artifacts
           path: ${{ github.workspace }}
@@ -187,7 +187,7 @@ jobs:
           echo "gradle_version=$GRADLE_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: 'Setup Gradle'
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6.3.0
         with:
           gradle-version: ${{ steps.gradle-version.outputs.gradle_version }}
           gradle-home-cache-includes: |
@@ -208,10 +208,10 @@ jobs:
       contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7.0.1
 
       - name: 'Set up JDK 21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v.6.0.0
         with:
           distribution: 'liberica'
           java-version: |
@@ -222,7 +222,7 @@ jobs:
 
       # Download build artifacts first to get the Gradle version file
       - name: Download build artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@8.0.1
         with:
           name: build-artifacts
           path: ${{ github.workspace }}
@@ -236,7 +236,7 @@ jobs:
           echo "gradle_version=$GRADLE_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: 'Setup Gradle'
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6.3.0
         with:
           gradle-version: ${{ steps.gradle-version.outputs.gradle_version }}
           gradle-home-cache-includes: |
@@ -248,14 +248,14 @@ jobs:
 
       # Download staging directory
       - name: Download staging directory
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@8.0.1
         with:
           name: staging-deploy
           path: build/staging-deploy
 
       # Download Javadoc
       - name: Download Javadoc
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@8.0.1
         with:
           name: javadoc
           path: build/docs/javadoc
@@ -301,7 +301,7 @@ jobs:
 
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: reports-publish
           path: |
