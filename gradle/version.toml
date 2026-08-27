@@ -14,7 +14,7 @@ dua3-utility = "24.4.0"
 jspecify = "1.0.1"
 junit-bom = "6.1.3"
 log4j-bom = "2.26.1"
-slb4j = "0.13.0"
+slb4j = "0.14.0"
 
 [libraries]
 dua3-utility = { group = "com.dua3.utility", name = "utility" }
