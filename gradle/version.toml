@@ -1,5 +1,5 @@
 [versions]
-projectVersion = "4.5.3"
+projectVersion = "4.5.4-SNAPSHOT"
 jdkVersion = "21"
 cabe-plugin = "4.5.0"
 jdkprovider-plugin = "0.11.0"
@@ -9,7 +9,7 @@ sonar-plugin = "7.4.0.8496"
 spotbugs-plugin = "6.5.11"
 test-logger-plugin = "4.0.0"
 
-dua3-utility = "24.5.1"
+dua3-utility = "24.6.0"
 
 jspecify = "1.0.1"
 junit-bom = "6.1.3"
