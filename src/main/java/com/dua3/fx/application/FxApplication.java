@@ -306,6 +306,7 @@ public abstract class FxApplication<A extends FxApplication<A, C>, C extends FxC
      *
      * @return an Optional holding the path to the CSS file to load, relative to the application class
      */
+    @SuppressWarnings("MethodMayBeStatic") // intended to be overridden when necessary
     protected Optional<URL> getCss() {
         return Optional.empty();
     }
