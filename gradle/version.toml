@@ -1,11 +1,11 @@
 [versions]
-projectVersion = "4.5.4-SNAPSHOT"
+projectVersion = "4.5.4"
 jdkVersion = "21"
 cabe-plugin = "4.5.0"
 jdkprovider-plugin = "0.11.0"
 jmh-plugin = "0.7.3"
 jreleaser-plugin = "1.26.0"
-sonar-plugin = "7.4.0.8496"
+sonar-plugin = "7.5.0.8588"
 spotbugs-plugin = "6.5.11"
 test-logger-plugin = "4.0.0"
 
