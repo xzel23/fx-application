@@ -118,6 +118,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      * @return true, if either "save" (in which case the document is automatically saved) or "don't save are selected
      * false, if the dialog was canceled
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean handleDirtyState() {
         boolean rc = true;
         List<? extends D> dirtyList = dirtyDocuments();
@@ -177,6 +178,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      *
      * @return URI of the current document
      */
+    @SuppressWarnings("unused")
     public Optional<URI> getCurrentDocumentLocation() {
         return getCurrentDocument().map(FxDocument::getLocation);
     }
@@ -227,6 +229,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      *
      * @return true if the new document was successfully created, false otherwise
      */
+    @SuppressWarnings("unused")
     public boolean newDocument() {
         // handle dirty state
         if (!handleDirtyState()) {
@@ -238,7 +241,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
         try {
             createDocument();
             return true;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOG.warn("error creating document", e);
             getApp().showErrorDialog(i18n.get("dua3.fx.application.dialog.error.new_document"), e.getLocalizedMessage());
             return false;
@@ -296,7 +299,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
         try {
             setCurrentDocument(loadDocument(uri));
             return true;
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             LOG.warn("error opening document", e);
             getApp().showErrorDialog(
                     i18n.format("dua3.fx.application.dialog.error.open.document.$0(name)", FxApplication.asText(uri)),
@@ -355,6 +358,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      *
      * @return a list of {@link FileChooser.ExtensionFilter} with filters applied to the open file dialog
      */
+    @SuppressWarnings("java:S4144")
     protected List<FileChooser.ExtensionFilter> openFilters() {
         List<FileChooser.ExtensionFilter> filters = new ArrayList<>();
         filters.add(getApp().getExtensionFilterAllFiles());
@@ -369,6 +373,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      *
      * @return a list of {@link FileChooser.ExtensionFilter} with filters applied to the save file dialog
      */
+    @SuppressWarnings("java:S4144")
     protected List<FileChooser.ExtensionFilter> saveFilters() {
         List<FileChooser.ExtensionFilter> filters = new ArrayList<>();
         filters.add(getApp().getExtensionFilterAllFiles());
@@ -426,7 +431,27 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
             return FxApplication.getUserHome();
         }
 
-        Path parent = null;
+        Path initialDir = getParentFolder(document);
+
+        if (initialDir == null || !Files.isDirectory(initialDir)) {
+            LOG.warn("initialDir() - initial directory invalid, using user home instead: {}", initialDir);
+            getApp();
+            initialDir = FxApplication.getUserHome();
+        }
+
+        return initialDir;
+    }
+
+    /**
+     * Retrieves the parent folder path for a given document. If the document has a location,
+     * the parent path of that location is returned. If not, it attempts to retrieve the last known
+     * document location from preferences. If no valid location is found, it defaults to the user's home directory.
+     *
+     * @param document the document for which the parent folder is determined; must not be null
+     * @return the path of the parent folder, or null if it cannot be determined
+     */
+    private @Nullable Path getParentFolder(D document) {
+        Path parent;
         try {
             if (document.hasLocation()) {
                 parent = document.getPath().getParent();
@@ -438,37 +463,31 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
                     parent = FxApplication.getUserHome();
                     LOG.debug("initialDir() - last document location not set, using user home as parent: {}", parent);
                 } else {
-                    try {
-                        Path path = Paths.get(URI.create(lastDocument));
-                        parent = path.getParent();
-                        LOG.debug("initialDir() - using last document location as parent: {}", parent);
-                    } catch (IllegalArgumentException e) {
-                        LOG.warn("could not retrieve last document location", e);
-                        parent = FxApplication.getUserHome();
-                    }
+                    Path path = Paths.get(URI.create(lastDocument));
+                    parent = path.getParent();
+                    LOG.debug("initialDir() - using last document location as parent: {}", parent);
                 }
             }
         } catch (IllegalStateException e) {
             // might for example be thrown by URI.create()
             LOG.warn("initialDir() - could not determine initial folder", e);
+            parent = FxApplication.getUserHome();
         }
-
-        Path initialDir = parent;
-
-        if (initialDir == null || !Files.isDirectory(initialDir)) {
-            LOG.warn("initialDir() - initial directory invalid, using user home instead: {}", initialDir);
-            getApp();
-            initialDir = FxApplication.getUserHome();
-        }
-
-        return initialDir;
+        return parent;
     }
 
+    /**
+     * Attempts to save the given document to the specified URI and handles any errors that occur during the save process.
+     *
+     * @param document the document to be saved
+     * @param uri the URI where the document should be saved
+     * @return true if the document was saved successfully, false if an error occurred
+     */
     private boolean saveDocumentAndHandleErrors(D document, URI uri) {
         try {
             document.saveAs(uri);
             return true;
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             LOG.warn("error saving document", e);
             getApp().showErrorDialog(
                     i18n.format("dua3.fx.application.dialog.error.save.$0(document)", FxApplication.asText(uri)),
@@ -512,6 +531,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      *
      * @param s the status text to be set
      */
+    @SuppressWarnings({"unused", "MethodMayBeStatic"})
     public void setStatusText(String s) {
         LOG.debug("status: {}", s);
     }
@@ -523,6 +543,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      *
      * @return the current directory if available, otherwise the user's home directory
      */
+    @SuppressWarnings("unused")
     public Path getCurrentDir() {
         FxDocument document = getCurrentDocument().orElse(null);
         if (document != null && document.hasLocation()) {
@@ -544,6 +565,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      *
      * @return true, if document is set
      */
+    @SuppressWarnings("unused")
     public boolean hasCurrentDocument() {
         return currentDocumentProperty.get() != null;
     }
@@ -568,7 +590,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      *
      * @param app the application instance
      */
-    void setApp(A app) {
+    void setApp(@SuppressWarnings("ParameterHidesMemberVariable") A app) {
         LangUtil.check(this.app == null, "app instance was already set");
         this.app = app;
         init(app);
@@ -582,7 +604,7 @@ public abstract class FxController<A extends FxApplication<A, C>, C extends FxCo
      *
      * @param app the application instance to be associated with this controller
      */
-    protected void init(A app) {
+    protected void init(@SuppressWarnings("ParameterHidesMemberVariable") A app) {
         // do nothing in the default implementation
     }
 
