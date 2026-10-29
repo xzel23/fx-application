@@ -3,8 +3,8 @@
 # This file is expected to be part of source control.
 # To regenerate this file, run: ./gradlew :dependencies --write-locks
 biz.aQute.bnd:biz.aQute.bnd.annotation:7.1.0=compileClasspath,testCompileClasspath
-com.dua3.utility:utility-bom:25.2.0=aggregateCodeCoverageReportResults,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
-com.dua3.utility:utility-fx-controls:25.2.0=aggregateCodeCoverageReportResults,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+com.dua3.utility:utility-bom:25.2.1=aggregateCodeCoverageReportResults,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+com.dua3.utility:utility-fx-controls:25.2.1=aggregateCodeCoverageReportResults,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 com.dua3.utility:utility-fx-icons:25.2.0=aggregateCodeCoverageReportResults,runtimeClasspath,testRuntimeClasspath
 com.dua3.utility:utility-fx:25.2.0=aggregateCodeCoverageReportResults,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 com.dua3.utility:utility:25.2.0=aggregateCodeCoverageReportResults,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
